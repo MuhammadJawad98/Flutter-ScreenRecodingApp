@@ -38,17 +38,17 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "flutter.native/helper";
     private static final int REQUEST_CODE = 100;
-    MediaRecorder mediaRecorder;
 
     private static final int REQUEST_PERMISSION = 10;
-    private static final SparseIntArray ORIENTATION = new SparseIntArray();
     private static final int DISPLAY_WIDTH = 720;
     private static final int DISPLAY_HEIGHT = 1280;
     private int screenDensity;
+    MediaRecorder mediaRecorder;
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
     private VirtualDisplay virtualDisplay;
     private MediaProjectionCallback mediaProjectionCallback;
+    private static final SparseIntArray ORIENTATION = new SparseIntArray();
 
     static {
         ORIENTATION.append(Surface.ROTATION_0, 90);
@@ -121,81 +121,10 @@ public class MainActivity extends FlutterActivity {
                     String output = onShareScreen(false);
                     result.success(output);
                 }
-//                    stopService(new Intent(this, MediaProjectionService.class));
-//                    String stopResult = stopScreenRecord();
-//                    result.success(stopResult);
-
-
             }
         });
     }
 
-//    private String stopScreenRecord() {
-//        try {
-//            mediaRecorder.stop();
-//            mediaRecorder.reset();
-//            mediaRecorder.release();
-//            return "Success";
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.d("TAG", ">>>> falied" + e.toString());
-//            return "Failed";
-//        }
-//    }
-//
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//    private String startScreenRecord() {
-//
-//        try {
-//            Log.v("TAG", "startRecording:");
-//            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-//            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-////            String videoUri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/MizdahRecord_" + getCurSysDate() + ".mp4";
-//            @SuppressLint("SimpleDateFormat") String videoUri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-//                    + "/ScreenRecorder_" + new SimpleDateFormat("dd-MM-yyyy-hh_mm_ss")
-//                    .format(new Date()) +
-//                    ".mp4";
-//            mediaRecorder.setOutputFile(videoUri);
-//            mediaRecorder.setVideoSize(720, 1280);
-//            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-//            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-//            mediaRecorder.setVideoEncodingBitRate(3000000);
-//            mediaRecorder.setVideoFrameRate(30);
-//            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-//            int orientation = ORIENTATION.get(rotation + 90);
-//            mediaRecorder.setOrientationHint(orientation);
-//            mediaRecorder.prepare();
-//            return "Success";
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return "Failed";
-//        }
-////        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-////        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-////        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-////        @SuppressLint("SimpleDateFormat") String videoUri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-////                + "/ScreenRecorder_" + new SimpleDateFormat("dd-MM-yyyy-hh_mm_ss")
-////                .format(new Date()) +
-////                ".mp4";
-////        mediaRecorder.setOutputFile(videoUri);
-//////Start......................................VideoSettings
-////        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-////        mediaRecorder.setVideoSize(720, 1280);
-////        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-////        mediaRecorder.setVideoEncodingBitRate(512 * 1000);
-////        mediaRecorder.setVideoFrameRate(60);
-//////End......................................VideoSettings
-////        try {
-////            mediaRecorder.prepare();
-////            mediaRecorder.start();
-////
-////            return "Success";
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
-////        return "Fail";
-//    }
 
     @Override
     protected void onDestroy() {
@@ -247,25 +176,6 @@ public class MainActivity extends FlutterActivity {
         }
     }
 
-    //    // Create launcher variable inside onAttach or onCreate or global
-//    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            new ActivityResultCallback<Instrumentation.ActivityResult>() {
-//                @Override
-//                public void onActivityResult(Instrumentation.ActivityResult result) {
-//                    System.out.println(">>>>>>" + result.getData());
-//                    if (result.getResultCode() != RESULT_OK) {
-//                        Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
-//                        toggleButton.setChecked(false);
-//                        return;
-//                    }
-//                    mediaProjectionCallback = new MediaProjectionCallback();
-//                    mediaProjection = mediaProjectionManager.getMediaProjection(result.getResultCode(), result.getData());
-//                    mediaProjection.registerCallback(mediaProjectionCallback, null);
-//                    virtualDisplay = createVirtualDispaly();
-//                    mediaRecorder.start();
-//                }
-//            });
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -276,7 +186,6 @@ public class MainActivity extends FlutterActivity {
         }
         if (resultCode != RESULT_OK) {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-//        toggleButton.setChecked(false);
             return;
         }
         mediaProjectionCallback = new MediaProjectionCallback();
@@ -291,7 +200,6 @@ public class MainActivity extends FlutterActivity {
     private void shareScreen() {
         if (mediaProjection == null) {
 
-//            launchSomeActivity.launch(mediaProjectionManager.createScreenCaptureIntent());
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
             return;
         }
