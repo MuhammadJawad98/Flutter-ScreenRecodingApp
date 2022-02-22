@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -98,12 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
            ElevatedButton(onPressed: ()async{
              final String result = await platform.invokeMethod('startScreenRecord');
-             print('>>> $result');
-           }, child: Text('button1')),
+             log('Start Screen recording >>> $result');
+           }, child: const Text('Start Recording')),
            ElevatedButton(onPressed: ()async{
              final String result = await platform.invokeMethod('stopScreenRecord');
-             print('>>> $result');
-           }, child: Text('button2')),
+             log('Stop Screen recording >>> $result');
+           }, child: const Text('Stop Recording')),
           ],
         ),
       ),

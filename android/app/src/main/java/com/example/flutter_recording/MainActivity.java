@@ -144,7 +144,7 @@ public class MainActivity extends FlutterActivity {
             mediaRecorder.stop();
             mediaRecorder.reset();
             stopScreenSharing();
-            return "Failed";
+            return "Success";
 
         }
     }
