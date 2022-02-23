@@ -78,53 +78,39 @@ public class MainActivity extends FlutterActivity {
 
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL).setMethodCallHandler((call, result) -> {
             if (call.method.equals("startScreenRecord")) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) +
-                        ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            || ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.RECORD_AUDIO)) {
-                        Snackbar.make(findViewById(R.id.content), "Permissions", Snackbar.LENGTH_INDEFINITE)
-                                .setAction("ENABLE", v1 -> ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
-                                }, REQUEST_PERMISSION)).show();
-
-
-                    } else {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
-                        }, REQUEST_PERMISSION);
-                    }
-                } else {
-                    String output = onShareScreen(true);
-                    result.success(output);
-                }
+                result.success(startProcess(true));
             }
             if (call.method.equals("stopScreenRecord")) {
+                result.success(startProcess(false));
 
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) +
-                        ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            || ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.RECORD_AUDIO)) {
-                        Snackbar.make(findViewById(R.id.content), "Permissions", Snackbar.LENGTH_INDEFINITE)
-                                .setAction("ENABLE", v1 -> ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
-                                }, REQUEST_PERMISSION)).show();
-
-
-                    } else {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
-                        }, REQUEST_PERMISSION);
-                    }
-                } else {
-                    String output = onShareScreen(false);
-                    result.success(output);
-                }
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    String startProcess(boolean active) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) +
+                ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.RECORD_AUDIO)) {
+                Snackbar.make(findViewById(R.id.content), "Permissions", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("ENABLE", v1 -> ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
+                        }, REQUEST_PERMISSION)).show();
+
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
+                }, REQUEST_PERMISSION);
+            }
+
+        } else {
+            return onShareScreen(active);
+        }
+        return "Fail";
+    }
 
     @Override
     protected void onDestroy() {
@@ -135,18 +121,29 @@ public class MainActivity extends FlutterActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private String onShareScreen(boolean isChecked) {
         if (isChecked) {
-            startService(new Intent(getApplicationContext(), MediaProjectionService.class));
-            initRecording();
-            shareScreen();
-            return "Success";
+            try {
+                startService(new Intent(getApplicationContext(), MediaProjectionService.class));
+                initRecording();
+                shareScreen();
+                return "Success";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Failed";
+            }
         } else {
-            stopService(new Intent(getApplicationContext(), MediaProjectionService.class));
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            stopScreenSharing();
-            return "Success";
+            try {
+                stopService(new Intent(getApplicationContext(), MediaProjectionService.class));
+                mediaRecorder.stop();
+                mediaRecorder.reset();
+                stopScreenSharing();
+                return "Success";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Failed";
+            }
 
         }
+
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -154,6 +151,7 @@ public class MainActivity extends FlutterActivity {
         return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void initRecording() {
         try {
             Log.v("TAG", "startRecording:");
